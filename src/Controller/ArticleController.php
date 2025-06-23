@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\ArticleSearch;
+use App\Form\ArticleSearchType;
 use App\Repository\ArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,13 +18,28 @@ use App\Form\ArticleType;
 
 class ArticleController extends AbstractController
 {
-    #[Route('/article', name: 'article_index', methods: ['GET'])]
-    public function index(): Response
+    #[Route('/article', name: 'article_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, ArticleRepository $articleRepository): Response
     {
-        //récupérer tous les articles de la table article de la BD et les mettre dans le tableau $articles
-        $articles= $this->getDoctrine()->getRepository(Article::class)->findAll();
+        $articles = $articleRepository->findAll();
 
-        return $this->render('article/index.html.twig', ['articles' => $articles]);
+
+        $propertySearch = new ArticleSearch();
+        $form = $this->createForm(ArticleSearchType::class, $propertySearch);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            //on récupère le nom d'article tapé dans le formulaire
+            $name = $propertySearch->getName();
+
+            if ($name !== "")  //si on a fourni un nom d'article on affiche tous les articles ayant ce nom
+            {
+                $articleSearch = $articleRepository->findBy(['name' => $name]);
+                return $this->render('article/indexSearch.html.twig', ['articles' => $articleSearch]);
+            }
+        }
+
+        return $this->render('article/index.html.twig', ['form' => $form->createView(), 'articles' => $articles]);
     }
 
     #[Route('/article/new', name: 'article_new', methods: ['GET', 'POST'])]
