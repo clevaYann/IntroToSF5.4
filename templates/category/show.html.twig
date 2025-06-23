@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ category.name }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+        <h1>{{ category.name }}</h1>
+
+        {# Ajoute ici d'autres informations si besoin #}
+        <hr>
+        <a href="{{ path('category_index') }}" class="btn btn-secondary">Retour</a>
+    </div>
+{% endblock %}
