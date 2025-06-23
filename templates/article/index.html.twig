@@ -22,6 +22,11 @@
                 <td>
                     <a href="/article/{{ article.id }}" class="btn btn-info">Détails</a>
                     <a href="/article/edit/{{ article.id }}" class="btn btn-warning">Modifier</a>
+                    <form method="post" action="{{ path('article_delete', {id: article.id}) }}"
+                          style="display: inline-block" onsubmit="return confirm('Etes-vous sûr de supprimer {{ article.name }} ?')">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ article.id) }}">
+                        <button class="btn btn-danger">Supprimer</button>
+                    </form>
                 </td>
             </tr> {% endfor %}
         </tbody>

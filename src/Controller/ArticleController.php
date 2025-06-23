@@ -69,4 +69,14 @@ class ArticleController extends AbstractController
         }
         return $this->render('article/edit.html.twig', ['form' => $form->createView()]);
     }
+
+    #[Route('/article/delete/{id}', name: 'article_delete', methods: ['POST'])]
+    public function delete(Request $request, Article $article, ArticleRepository $articleRepository): RedirectResponse
+    {
+        if ($this->isCsrfTokenValid('delete'.$article->getId(), $request->request->get('_token'))) {
+            $articleRepository->remove($article, true);
+        }
+
+        return $this->redirectToRoute('article_index');
+    }
 }
