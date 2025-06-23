@@ -10,8 +10,13 @@
                 <li class="nav-item">
                     <a href="{{ path('home') }}" class="nav-link">Acceil</a>
                 </li>
-                <li class="nav-item">
-                    <a href="{{ path('article_index') }}" class="nav-link">Articles</a>
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Articles</a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="accountDropdownLink">
+                        <a href="{{ path('article_index') }}" class="dropdown-item">Liste des articles</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="{{ path('article_new') }}" class="dropdown-item">Ajouter un article</a>
+                    </div>
                 </li>
             </ul>
         </div>

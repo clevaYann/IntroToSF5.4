@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Repository\ArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -10,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 
 class ArticleController extends AbstractController
 {
@@ -21,20 +24,24 @@ class ArticleController extends AbstractController
 
         return $this->render('article/index.html.twig', ['articles' => $articles]);
     }
-    /**
-     * @Route("/article/new")
-     */
-    public function new(): Response
+
+    #[Route('/article/new', name: 'article_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, ArticleRepository $articleRepository): RedirectResponse|Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-
         $article = new Article();
-        $article->setName('Article 1');
-        $article->setPrice(1000);
+        $form = $this->createFormBuilder($article)
+            ->add('name', TextType::class)
+            ->add('price', TextType::class)
+            ->add('save', SubmitType::class, array('label' => 'Ajouter un article')
+            )->getForm();
 
-        $entityManager->persist($article);
-        $entityManager->flush();
+        $form->handleRequest($request);
 
-        return new Response('Article enregistré avec id ' . $article->getId());
+        if ($form->isSubmitted() && $form->isValid()) {
+            $articleRepository->save($article, true);
+
+            return $this->redirectToRoute('article_index');
+        }
+        return $this->render('article/new.html.twig', ['form' => $form->createView()]);
     }
 }
