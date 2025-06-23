@@ -31,6 +31,9 @@ class Article
     )]
     private ?string $price = null;
 
+    #[ORM\ManyToOne(inversedBy: 'articles')]
+    private ?Category $category = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -62,5 +65,17 @@ class Article
     public function __toString()
     {
         return $this->getName();
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
+        return $this;
     }
 }
