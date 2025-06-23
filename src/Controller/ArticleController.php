@@ -44,4 +44,29 @@ class ArticleController extends AbstractController
         }
         return $this->render('article/new.html.twig', ['form' => $form->createView()]);
     }
+    #[Route('/article/{id}', name: 'article_show', methods: ['GET'])]
+    public function show(Article $article): Response
+    {
+        return $this->render('article/show.html.twig', array('article' => $article));
+    }
+    #[Route('/article/edit/{id}', name: 'article_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, Article $article, ArticleRepository $articleRepository): RedirectResponse|Response
+    {
+        //$article = $this->getDoctrine()->getRepository(Article::class)->find($id);
+
+        $form = $this->createFormBuilder($article)
+            ->add('name', TextType::class)
+            ->add('price', TextType::class)
+            ->add('save', SubmitType::class, array( 'label' => 'Modifier' ))
+            ->getForm();
+
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+            return $this->redirectToRoute('article_index');
+        }
+        return $this->render('article/edit.html.twig', ['form' => $form->createView()]);
+    }
 }
