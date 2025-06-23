@@ -12,7 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-
+use App\Form\ArticleType;
 
 class ArticleController extends AbstractController
 {
@@ -29,12 +29,9 @@ class ArticleController extends AbstractController
     public function new(Request $request, ArticleRepository $articleRepository): RedirectResponse|Response
     {
         $article = new Article();
-        $form = $this->createFormBuilder($article)
-            ->add('name', TextType::class)
-            ->add('price', TextType::class)
-            ->add('save', SubmitType::class, array('label' => 'Ajouter un article')
-            )->getForm();
+        $form = $this->createForm(ArticleType::class, $article);
 
+        // 👇 Il manque cette ligne dans ton code
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -42,8 +39,12 @@ class ArticleController extends AbstractController
 
             return $this->redirectToRoute('article_index');
         }
-        return $this->render('article/new.html.twig', ['form' => $form->createView()]);
+
+        return $this->render('article/new.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
+
     #[Route('/article/{id}', name: 'article_show', methods: ['GET'])]
     public function show(Article $article): Response
     {
@@ -52,23 +53,23 @@ class ArticleController extends AbstractController
     #[Route('/article/edit/{id}', name: 'article_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Article $article, ArticleRepository $articleRepository): RedirectResponse|Response
     {
-        //$article = $this->getDoctrine()->getRepository(Article::class)->find($id);
+        $form = $this->createForm(ArticleType::class, $article);
 
-        $form = $this->createFormBuilder($article)
-            ->add('name', TextType::class)
-            ->add('price', TextType::class)
-            ->add('save', SubmitType::class, array( 'label' => 'Modifier' ))
-            ->getForm();
-
+        // Manquant dans ton code : traitement de la requête
         $form->handleRequest($request);
-        if($form->isSubmitted() && $form->isValid())
-        {
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->flush();
+            $entityManager->flush(); // Pas besoin de persist() pour une entité existante
+
             return $this->redirectToRoute('article_index');
         }
-        return $this->render('article/edit.html.twig', ['form' => $form->createView()]);
+
+        return $this->render('article/edit.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
+
 
     #[Route('/article/delete/{id}', name: 'article_delete', methods: ['POST'])]
     public function delete(Request $request, Article $article, ArticleRepository $articleRepository): RedirectResponse
