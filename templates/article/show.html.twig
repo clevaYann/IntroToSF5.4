@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ article.name }}{% endblock %}
+
+{% block body %}
+    <div class="container">
+
+        <h1>{{ article.name }}</h1>
+        <hr>
+        <p>Prix : {{ article.price }} €</p>
+        <p>Titre : {{ article.category.title }}</p>
+        <p>Description : {{ article.category.description}}</p>
+        <hr>
+        <a href="/article" class="btn btn-secondary">Retour</a>
+    </div>
+{% endblock %}
