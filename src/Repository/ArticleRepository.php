@@ -16,6 +16,14 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ArticleRepository extends ServiceEntityRepository
 {
+    public function findArticleByName($mot_cle){
+        return $this->createQueryBuilder('a')
+            ->where('a.name like :name')
+            ->setParameter('name', '%'.$mot_cle.'%')
+            ->orderBy('a.name', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
     public function findByPriceRange($minPrice, $maxPrice)
     {
         return $this->createQueryBuilder('a')

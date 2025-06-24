@@ -28,8 +28,14 @@
                         <a href="{{ path('category_new') }}" class="dropdown-item">Ajouter une catégorie</a>
                         <div class="dropdown-divider"></div>
                         <a href="{{ path('article_in_cat') }}" class="dropdown-item">Recherche article par catégorie</a>
+
                     </div>
+
                 </li>
+                <form class="form-inline my-2 my-lg-0" method="get" action="{{ path('app_search') }}">
+                    <input name="mot_cle" class="form-control form-control-sm mr-sm-2" type="search" placeholder="Recherche par nom article" aria-label="Search">
+                    <button class="btn btn-outline-dark btn-sm my-2 my-sm-0" type="submit">Rechercher</button>
+                </form>
             </ul>
         </div>
     </div>
