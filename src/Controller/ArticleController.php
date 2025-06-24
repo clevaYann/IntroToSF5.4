@@ -4,7 +4,9 @@ namespace App\Controller;
 
 use App\Entity\Article;
 use App\Entity\ArticleSearch;
+use App\Entity\PriceSearch;
 use App\Form\ArticleSearchType;
+use App\Form\PriceSearchType;
 use App\Repository\ArticleRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,6 +20,20 @@ use App\Form\ArticleType;
 
 class ArticleController extends AbstractController
 {
+    #[Route('/art_price/', name: 'article_by_price', methods: ['GET','POST'])]
+    public function articleByPrice(Request $request, ArticleRepository $articleRepository): Response
+    {
+        $priceSearch = new PriceSearch();
+        $form = $this->createForm(PriceSearchType::class, $priceSearch);
+        $form->handleRequest($request);
+        $articles = [];
+        if ($form->isSubmitted() && $form->isValid()) {
+            $minPrice = $priceSearch->getMinPrice();
+            $maxPrice = $priceSearch->getMaxPrice();
+            $articles = $articleRepository->findByPriceRange($minPrice, $maxPrice);
+        }
+        return $this->render('article/articleByPrice.html.twig', ['form' => $form->createView(), 'articles' => $articles]);
+    }
     #[Route('/article', name: 'article_index', methods: ['GET', 'POST'])]
     public function index(Request $request, ArticleRepository $articleRepository): Response
     {

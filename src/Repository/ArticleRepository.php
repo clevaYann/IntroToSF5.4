@@ -16,6 +16,19 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ArticleRepository extends ServiceEntityRepository
 {
+    public function findByPriceRange($minPrice, $maxPrice)
+    {
+        return $this->createQueryBuilder('a')
+            ->andWhere('a.price >= :minPrice')
+            ->setParameter('minPrice', $minPrice)
+            ->andWhere('a.price <= :maxPrice')
+            ->setParameter('maxPrice', $maxPrice)
+            ->orderBy('a.id', 'ASC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+            ;
+    }
     // méthode save à ajouter
     public function save(Article $entity, bool $flush = false): void
     {
